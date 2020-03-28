@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: Krzem
+Main-Class: com.krzem.nn_opencv_object_detection.Main
+Class-Path: com/krzem/nn_opencv_object_detection/modules/opencv-420.jar

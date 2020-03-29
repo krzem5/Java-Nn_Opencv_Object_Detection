@@ -1,0 +1,5 @@
+### Github File Push Ignore
+
+**/*.class
+*.jar
+out.txt

@@ -29,12 +29,6 @@ import org.opencv.videoio.Videoio;
 
 
 public class Main{
-	public static void main(String[] args){
-		new Main(args);
-	}
-
-
-
 	private VideoCapture cap;
 	private int[][] dpl;
 	private double[][][] nn_wl;
@@ -49,12 +43,18 @@ public class Main{
 
 
 
+	public static void main(String[] args){
+		new Main(args);
+	}
+
+
+
 	public Main(String[] args){
 		if (args.length<6){
 			throw new IllegalArgumentException("Usage: java -jar main.jar <camera id|video file path> <nn model file path> <output file path> <output rate (seconds)> <square overlap> <sq 1 size>[,<sq 2 size>[,<sq 3 size>[,<sq N size>]]]");
 		}
 		long st=System.nanoTime();
-		System.out.println("[APP]\tStarting to load OpenCV Library...");
+		System.out.println("[APP]     Starting to load OpenCV Library...");
 		try{
 			InputStream is=Main.class.getResourceAsStream("/com/krzem/nn_opencv_object_detection/modules/opencv_java420.dll");
 			byte[] bf=new byte[1024];
@@ -72,7 +72,7 @@ public class Main{
 			e.printStackTrace();
 			System.exit(1);
 		}
-		System.out.println("[APP]\tOpenCV Library loaded!\n[APP]\tStarting to read NN Model file...");
+		System.out.println("[APP]     OpenCV Library loaded!\n[APP]     Starting to read NN Model file...");
 		Main cls=this;
 		try{
 			BufferedReader r=new BufferedReader(new FileReader(args[1]));
@@ -101,7 +101,7 @@ public class Main{
 						}
 						idx++;
 					}
-					System.out.printf("[NN]\tDetected NN Size: %s\n",l.replace("x"," x "));
+					System.out.printf("[NN]      Detected NN Size: %s\n",l.replace("x"," x "));
 					this.nn_wl=new double[h.length+1][][];
 					this.nn_bl=new double[h.length+1][];
 				}
@@ -109,7 +109,7 @@ public class Main{
 					int mw=Integer.parseInt(l.split(":")[0].split("x")[0]);
 					int mh=Integer.parseInt(l.split(":")[0].split("x")[1]);
 					this.nn_wl[wi]=new double[mh][mw];
-					System.out.printf("[NN]\tStarting to parse %d x %d Weight Matrix...\n",mw,mh);
+					System.out.printf("[NN]      Starting to parse %d x %d Weight Matrix...\n",mw,mh);
 					l=l.split(":")[1];
 					this._thr_left=0;
 					String[] _ll=l.split(";");
@@ -142,18 +142,18 @@ public class Main{
 						}
 					}
 					wi++;
-					System.out.printf("[NN]\t%d x %d Weight Matrix parsed!\n",mw,mh);
+					System.out.printf("[NN]      %d x %d Weight Matrix parsed!\n",mw,mh);
 				}
 				else if (s==2){
 					int ms=Integer.parseInt(l.split(":")[0]);
 					this.nn_bl[bi]=new double[ms];
-					System.out.printf("[NN]\tStarting to parse %d x 1 Bias Matrix...\n",ms);
+					System.out.printf("[NN]      Starting to parse %d x 1 Bias Matrix...\n",ms);
 					l=l.split(":")[1];
 					for (int x=0;x<ms;x++){
 						this.nn_bl[bi][x]=Double.parseDouble(l.split(",")[x]);
 					}
 					bi++;
-					System.out.printf("[NN]\t%d x 1 Bias Matrix parsed!\n",ms);
+					System.out.printf("[NN]      %d x 1 Bias Matrix parsed!\n",ms);
 				}
 				if (s==0){
 					s=1;
@@ -163,7 +163,7 @@ public class Main{
 				}
 			}
 			r.close();
-			System.out.println("[APP]\tNN Model loaded!\n[APP]\tOpening capture...");
+			System.out.println("[APP]     NN Model loaded!\n[APP]     Opening capture...");
 		}
 		catch (Exception e){
 			e.printStackTrace();
@@ -171,13 +171,13 @@ public class Main{
 		}
 		try{
 			this.cap=new VideoCapture(Integer.parseInt(args[0]));
-			System.out.printf("[CAPTURE]\tOpening capture on external camera #%d...\n",Integer.parseInt(args[0]));
+			System.out.printf("[CAPTURE] Opening capture on external camera #%d...\n",Integer.parseInt(args[0]));
 		}
 		catch (Exception e){
 			this.cap=new VideoCapture(args[0]);
-			System.out.printf("[CAPTURE]\tOpening capture on file %s...\n",args[0]);
+			System.out.printf("[CAPTURE] Opening capture on file %s...\n",args[0]);
 		}
-		System.out.printf("[CAPTURE]\tDetected input size: %dpx x %dpx\n[CAPTURE]\tDetected input frame rate: %ffps\n[APP]\tCapture opened!\n[APP]\tStarting to generate detection rectangles...\n",(int)this.cap.get(Videoio.CAP_PROP_FRAME_WIDTH),(int)this.cap.get(Videoio.CAP_PROP_FRAME_HEIGHT),this.cap.get(Videoio.CAP_PROP_FPS));
+		System.out.printf("[CAPTURE] Detected input size: %dpx x %dpx\n[CAPTURE] Detected input frame rate: %ffps\n[APP]     Capture opened!\n[APP]     Starting to generate detection rectangles...\n",(int)this.cap.get(Videoio.CAP_PROP_FRAME_WIDTH),(int)this.cap.get(Videoio.CAP_PROP_FRAME_HEIGHT),this.cap.get(Videoio.CAP_PROP_FPS));
 		int w=Math.min((int)this.cap.get(Videoio.CAP_PROP_FRAME_WIDTH),1920);
 		double sq_o=1-Double.parseDouble(args[4]);
 		int[] sq_sl=new int[args.length-5];
@@ -194,7 +194,7 @@ public class Main{
 				k++;
 			}
 		}
-		System.out.printf("[APP]\t%d detection rectangles generated!\n[APP]\tStarting main thread...\n",k);
+		System.out.printf("[APP]     %d detection rectangles generated!\n[APP]     Starting main thread...\n",k);
 		this._otp_fn=args[2];
 		this._otp_s_tm=Double.parseDouble(args[3]);
 		this._otp_ns_tm=System.nanoTime()+(long)(this._otp_s_tm*1e9);
@@ -215,7 +215,7 @@ public class Main{
 			}
 		}).start();
 		double dt=(double)(System.nanoTime()-st);
-		System.out.printf("[APP]\tMain thread started!\n[APP]\tStartup took %.2f seconds.\n",dt*1e-9);
+		System.out.printf("[APP]     Main thread started!\n[APP]     Startup took %.2f seconds.\n",dt*1e-9);
 	}
 
 
@@ -224,7 +224,7 @@ public class Main{
 		Mat img=new Mat();
 		this.cap.read(img);
 		if (img.empty()==true){
-			System.out.println("[CAPTURE]\tReached end of file!\n[APP]\tClosing Application...");
+			System.out.println("[CAPTURE] Reached end of file!\n[APP]     Closing Application...");
 			System.exit(0);
 		}
 		if (this.cap.isOpened()==false){

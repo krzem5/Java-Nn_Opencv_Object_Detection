@@ -39,4 +39,4 @@ with zipfile.ZipFile("build/nn_opencv_object_detection.jar","w") as zf,zipfile.Z
 				print(f"Writing: {k}")
 				zf.writestr(k,dt)
 if ("--run" in sys.argv):
-	subprocess.run(["java","-jar","build/nn_opencv_object_detection.jar","D:/K/Project/project2/DATA/video/video-6.MOV","D:/K/Coding/Java-NN_Image_Recognition/data/full.nn-data","out.txt","0.01","0.5","80","40","30"])
+	subprocess.run(["java","-jar","build/nn_opencv_object_detection.jar","data/video.mov","data/full.nn-data","out.txt","0.01","0.5","80","40","30"])
